@@ -27,7 +27,7 @@
     var von=(fname&&fullName)?(fname+" "+fullName):(fullName||fname||"");
     shareBase="https://anbefal.noteless.com/invitasjon/?c="+code+"&m=r"+(von?"&von="+encodeURIComponent(von):"");
     NL.display=(shareBase+"&src=link").replace(/^https:\/\//,"");
-    NL.von=von;resolveReady();
+    NL.von=von;NL.code=code;resolveReady();
   }
   function init(mail){email=mail.toLowerCase();NL.email=email;makeCode(email).then(function(c){code=c;finish()})}
   if(email&&email.indexOf("@")>-1)init(email);else if(uid)makeCodeRaw("noteless:uid:"+uid).then(function(c){code=c;finish()});
@@ -903,6 +903,49 @@ input[type=range].hint::-webkit-slider-thumb{animation:thumbPulse 1.8s ease-out 
   </aside>
 </section>
 
+
+<style id="refstatus-css">
+.rstat{display:flex;flex-direction:column;gap:22px;margin:0 0 40px;padding:28px 32px;background:var(--surface,#fff);border:1px solid var(--hair,#CAC9BE);border-radius:var(--r-card,16px);animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
+.rstat[hidden]{display:none}
+.rstat-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.rstat-t{margin:0;font-size:20px;line-height:1.25;font-weight:500;letter-spacing:-0.01em;color:var(--fg,#1E1C19)}
+.rstat-note{font-size:13px;color:var(--muted,#4E4D44)}
+.rstat-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin:0;padding:0;list-style:none}
+.rstat-nums li{display:flex;flex-direction:column;gap:4px;padding:0 20px;border-left:1px solid var(--hair,#CAC9BE)}
+.rstat-nums li:first-child{padding-left:0;border-left:0}
+.rstat-nums b{font-size:clamp(30px,3.4vw,42px);line-height:1;font-weight:400;letter-spacing:-0.03em;color:var(--plum-deep,#8A3F79);font-variant-numeric:tabular-nums}
+.rstat-nums span{font-size:14px;line-height:1.3;color:var(--muted,#4E4D44)}
+.rstat-prog{display:flex;flex-direction:column;gap:10px}
+.rstat-bar{position:relative;height:8px;border-radius:99px;background:var(--plum-soft,#F3E3F6)}
+.rstat-fill{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:99px;background:var(--plum,#A55392);transition:width 1.2s cubic-bezier(.3,.7,.2,1) .2s}
+.rstat-mk{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--bg,#fff);border:2px solid var(--plum,#A55392)}
+.rstat-mk.on{background:var(--plum,#A55392)}
+.rstat-mk i{position:absolute;top:18px;left:50%;transform:translateX(-50%);font-style:normal;font-size:12px;white-space:nowrap;color:var(--muted,#4E4D44)}
+.rstat-mk:last-child i{left:auto;right:-6px;transform:none}
+.rstat-line{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;font-size:15px;color:var(--fg,#1E1C19)}
+.rstat-line b{font-weight:500;color:var(--plum-deep,#8A3F79)}
+.rstat-next{color:var(--muted,#4E4D44)}
+@media (max-width:640px){
+  .rstat{padding:22px 20px;gap:18px;margin-bottom:28px}
+  .rstat-nums li{padding:0 10px}
+  .rstat-nums b{font-size:28px}
+  .rstat-nums span{font-size:12.5px}
+  .rstat-line{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){.rstat{animation:none}.rstat-fill{transition:none}}
+</style>
+<section class="rstat" id="rstat" hidden aria-live="polite">
+  <div class="rstat-h"><h2 class="rstat-t" id="rstat-t"></h2><span class="rstat-note" id="rstat-note"></span></div>
+  <ul class="rstat-nums">
+    <li><b id="rstat-o">0</b><span id="rstat-ol"></span></li>
+    <li><b id="rstat-c">0</b><span id="rstat-cl"></span></li>
+    <li><b id="rstat-s">0</b><span id="rstat-sl"></span></li>
+  </ul>
+  <div class="rstat-prog">
+    <div class="rstat-bar"><span class="rstat-fill" id="rstat-fill"></span><span class="rstat-mk" id="rstat-m5" style="left:50%"><i id="rstat-m5l"></i></span><span class="rstat-mk" id="rstat-m10" style="left:100%"><i id="rstat-m10l"></i></span></div>
+    <div class="rstat-line"><span id="rstat-earned"></span><span class="rstat-next" id="rstat-next"></span></div>
+  </div>
+</section>
 <section class="earn" id="earn">
   <div class="earn-top">
     <div>
@@ -1171,4 +1214,35 @@ var t0=performance.now();function tick(t){draw(Math.max(0,t-t0)/1000*D.fps);requ
 })();
 </script>
 
+<script id="refstatus-js">
+(function(){
+  var ENDPOINT="https://script.google.com/macros/s/AKfycbzSiQRFeQweSGrtUqq66aPdvl2wPoCB_dIoAQVxuI5G_XK7Kk8jcFxCu8YT_hLAQB3R/exec", MARKET="no", S={"nb": {"t": "Dine invitasjoner", "o": "Åpnet lenken", "c": "Tok imot gaven", "s": "Registrert", "earned": "Opptjent så langt: <b>{m}</b>", "zero": "Når kolleger registrerer seg, samler du gratis måneder.", "to1": "{n} til, så får du 1&nbsp;år gratis", "to3": "{n} til, så får du 3&nbsp;år gratis", "max": "Du har nådd 3&nbsp;år gratis", "m1": "1 måned gratis", "mn": "{n} måneder gratis", "y1": "1 år gratis", "y3": "3 år gratis", "y1s": "1 år", "y3s": "3 år", "note": "Registreringer oppdateres daglig."}, "no": {"t": "Dine invitasjoner", "o": "Åpnet lenken", "c": "Tok imot gaven", "s": "Registrert", "earned": "Opptjent så langt: <b>{m}</b>", "zero": "Når kolleger registrerer seg, samler du gratis måneder.", "to1": "{n} til, så får du 1&nbsp;år gratis", "to3": "{n} til, så får du 3&nbsp;år gratis", "max": "Du har nådd 3&nbsp;år gratis", "m1": "1 måned gratis", "mn": "{n} måneder gratis", "y1": "1 år gratis", "y3": "3 år gratis", "y1s": "1 år", "y3s": "3 år", "note": "Registreringer oppdateres daglig."}, "en": {"t": "Your invitations", "o": "Link opened", "c": "Gift accepted", "s": "Signed up", "earned": "Earned so far: <b>{m}</b>", "zero": "Once colleagues sign up, you start collecting free months.", "to1": "{n} more to 1&nbsp;year free", "to3": "{n} more to 3&nbsp;years free", "max": "3&nbsp;years free reached", "m1": "1 month free", "mn": "{n} months free", "y1": "1 year free", "y3": "3 years free", "y1s": "1 year", "y3s": "3 years", "note": "Sign-ups update once a day."}}, DEF="nb", data=null;
+  function L(){var l=(document.documentElement.lang||DEF).slice(0,2);return S[l]||S[DEF]}
+  function f(s,o){return s.replace(/\{(\w+)\}/g,function(_,k){return o[k]})}
+  function months(n){return n+(n>=5?7:0)+(n>=10?19:0)}
+  function mlabel(m,t){return m===12?t.y1:m===36?t.y3:m===1?t.m1:f(t.mn,{n:m})}
+  function $(id){return document.getElementById(id)}
+  function render(){
+    if(!data)return; var t=L(), n=data.signed_up||0, m=months(n);
+    $('rstat-t').innerHTML=t.t; $('rstat-note').innerHTML=t.note;
+    $('rstat-o').textContent=data.opened||0; $('rstat-c').textContent=data.claimed||0; $('rstat-s').textContent=n;
+    $('rstat-ol').innerHTML=t.o; $('rstat-cl').innerHTML=t.c; $('rstat-sl').innerHTML=t.s;
+    $('rstat-m5l').innerHTML='5 · '+t.y1s; $('rstat-m10l').innerHTML='10 · '+t.y3s;
+    $('rstat-m5').className='rstat-mk'+(n>=5?' on':''); $('rstat-m10').className='rstat-mk'+(n>=10?' on':'');
+    $('rstat-earned').innerHTML=n?f(t.earned,{m:mlabel(m,t)}):t.zero;
+    $('rstat-next').innerHTML=n>=10?t.max:n>=5?f(t.to3,{n:10-n}):n?f(t.to1,{n:5-n}):'';
+    requestAnimationFrame(function(){$('rstat-fill').style.width=Math.min(100,n*10)+'%'});
+  }
+  function load(code){
+    try{localStorage.setItem('nl_ref_self',code)}catch(e){}
+    fetch(ENDPOINT+'?form=referral&type=status&market='+MARKET+'&code='+encodeURIComponent(code)).then(function(r){return r.json()}).then(function(d){
+      if(!d||!d.ok||((d.opened||0)+(d.claimed||0)+(d.signed_up||0))===0)return;
+      data=d; $('rstat').hidden=false; render();
+    }).catch(function(){});
+  }
+  new MutationObserver(render).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+  function start(){if(window.NL&&NL.ready)NL.ready.then(function(){if(NL.code)load(NL.code)})}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 </body></html>
