@@ -872,6 +872,9 @@ input[type=range].hint::-webkit-slider-thumb{animation:thumbPulse 1.8s ease-out 
 </footer>
 </div>
 
+<script id="refvid-js">
+var NL_VID=(function(){try{var v=localStorage.getItem('nl_ref_vid');if(!v){v=Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);localStorage.setItem('nl_ref_vid',v)}return v}catch(e){return Math.random().toString(36).slice(2,12)}})();
+</script>
 <script>
 (function(){
   var ENDPOINT="https://script.google.com/macros/s/AKfycbzSiQRFeQweSGrtUqq66aPdvl2wPoCB_dIoAQVxuI5G_XK7Kk8jcFxCu8YT_hLAQB3R/exec";
@@ -951,7 +954,7 @@ input[type=range].hint::-webkit-slider-thumb{animation:thumbPulse 1.8s ease-out 
   applyLang(lang,true);
 
   var claimedEmail="";
-  function log(action,extra){try{fetch(ENDPOINT,{method:"POST",keepalive:true,body:new URLSearchParams(Object.assign({form:"referral",type:"event",action:action,code:code,arm:arm,src:src,market:"no"},extra||{}))}).catch(function(){})}catch(e){}}
+  function log(action,extra){try{fetch(ENDPOINT,{method:"POST",keepalive:true,body:new URLSearchParams(Object.assign({form:"referral",type:"event",action:action,code:code,arm:arm,src:src,vid:(window.NL_VID||""),self:(function(){try{return localStorage.getItem("nl_ref_self")===code?"1":""}catch(e){return ""}})(),market:"no"},extra||{}))}).catch(function(){})}catch(e){}}
   log("claim_page_view");
   document.getElementById("signup").addEventListener("click",function(){log("signup_click",{email:claimedEmail})});
 
