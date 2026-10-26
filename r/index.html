@@ -904,13 +904,14 @@ input[type=range].hint::-webkit-slider-thumb{animation:thumbPulse 1.8s ease-out 
 </section>
 
 
+
 <style id="refstatus-css">
 .rstat{display:flex;flex-direction:column;gap:22px;margin:0 0 40px;padding:28px 32px;background:var(--surface,#fff);border:1px solid var(--hair,#CAC9BE);border-radius:var(--r-card,16px);animation:rise .6s cubic-bezier(.2,.7,.2,1) both}
 .rstat[hidden]{display:none}
 .rstat-h{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .rstat-t{margin:0;font-size:20px;line-height:1.25;font-weight:500;letter-spacing:-0.01em;color:var(--fg,#1E1C19)}
 .rstat-note{font-size:13px;color:var(--muted,#4E4D44)}
-.rstat-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;margin:0;padding:0;list-style:none}
+.rstat-nums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:0;padding:0;list-style:none}
 .rstat-nums li{display:flex;flex-direction:column;gap:4px;padding:0 20px;border-left:1px solid var(--hair,#CAC9BE)}
 .rstat-nums li:first-child{padding-left:0;border-left:0}
 .rstat-nums b{font-size:clamp(30px,3.4vw,42px);line-height:1;font-weight:400;letter-spacing:-0.03em;color:var(--plum-deep,#8A3F79);font-variant-numeric:tabular-nums}
@@ -927,7 +928,9 @@ input[type=range].hint::-webkit-slider-thumb{animation:thumbPulse 1.8s ease-out 
 .rstat-next{color:var(--muted,#4E4D44)}
 @media (max-width:640px){
   .rstat{padding:22px 20px;gap:18px;margin-bottom:28px}
+  .rstat-nums{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:18px}
   .rstat-nums li{padding:0 10px}
+  .rstat-nums li:nth-child(3){padding-left:0;border-left:0}
   .rstat-nums b{font-size:28px}
   .rstat-nums span{font-size:12.5px}
   .rstat-line{font-size:14px}
@@ -940,6 +943,7 @@ input[type=range].hint::-webkit-slider-thumb{animation:thumbPulse 1.8s ease-out 
     <li><b id="rstat-o">0</b><span id="rstat-ol"></span></li>
     <li><b id="rstat-c">0</b><span id="rstat-cl"></span></li>
     <li><b id="rstat-s">0</b><span id="rstat-sl"></span></li>
+    <li><b id="rstat-a">0</b><span id="rstat-al"></span></li>
   </ul>
   <div class="rstat-prog">
     <div class="rstat-bar"><span class="rstat-fill" id="rstat-fill"></span><span class="rstat-mk" id="rstat-m5" style="left:50%"><i id="rstat-m5l"></i></span><span class="rstat-mk" id="rstat-m10" style="left:100%"><i id="rstat-m10l"></i></span></div>
@@ -1216,17 +1220,17 @@ var t0=performance.now();function tick(t){draw(Math.max(0,t-t0)/1000*D.fps);requ
 
 <script id="refstatus-js">
 (function(){
-  var ENDPOINT="https://script.google.com/macros/s/AKfycbzSiQRFeQweSGrtUqq66aPdvl2wPoCB_dIoAQVxuI5G_XK7Kk8jcFxCu8YT_hLAQB3R/exec", MARKET="no", S={"nb": {"t": "Dine invitasjoner", "o": "Åpnet lenken", "c": "Tok imot gaven", "s": "Registrert", "earned": "Opptjent så langt: <b>{m}</b>", "zero": "Når kolleger registrerer seg, samler du gratis måneder.", "to1": "{n} til, så får du 1&nbsp;år gratis", "to3": "{n} til, så får du 3&nbsp;år gratis", "max": "Du har nådd 3&nbsp;år gratis", "m1": "1 måned gratis", "mn": "{n} måneder gratis", "y1": "1 år gratis", "y3": "3 år gratis", "y1s": "1 år", "y3s": "3 år", "note": "Registreringer oppdateres daglig."}, "no": {"t": "Dine invitasjoner", "o": "Åpnet lenken", "c": "Tok imot gaven", "s": "Registrert", "earned": "Opptjent så langt: <b>{m}</b>", "zero": "Når kolleger registrerer seg, samler du gratis måneder.", "to1": "{n} til, så får du 1&nbsp;år gratis", "to3": "{n} til, så får du 3&nbsp;år gratis", "max": "Du har nådd 3&nbsp;år gratis", "m1": "1 måned gratis", "mn": "{n} måneder gratis", "y1": "1 år gratis", "y3": "3 år gratis", "y1s": "1 år", "y3s": "3 år", "note": "Registreringer oppdateres daglig."}, "en": {"t": "Your invitations", "o": "Link opened", "c": "Gift accepted", "s": "Signed up", "earned": "Earned so far: <b>{m}</b>", "zero": "Once colleagues sign up, you start collecting free months.", "to1": "{n} more to 1&nbsp;year free", "to3": "{n} more to 3&nbsp;years free", "max": "3&nbsp;years free reached", "m1": "1 month free", "mn": "{n} months free", "y1": "1 year free", "y3": "3 years free", "y1s": "1 year", "y3s": "3 years", "note": "Sign-ups update once a day."}}, DEF="nb", data=null;
+  var ENDPOINT="https://script.google.com/macros/s/AKfycbzSiQRFeQweSGrtUqq66aPdvl2wPoCB_dIoAQVxuI5G_XK7Kk8jcFxCu8YT_hLAQB3R/exec", MARKET="no", S={"nb": {"t": "Dine invitasjoner", "o": "Åpnet lenken", "c": "Tok imot gaven", "s": "Registrert", "a": "Aktive (30+ konsultasjoner)", "earned": "Opptjent så langt: <b>{m}</b>", "zero": "Når en kollega har brukt Noteless i 30 konsultasjoner, samler du gratis måneder.", "to1": "{n} til, så får du 1&nbsp;år gratis", "to3": "{n} til, så får du 3&nbsp;år gratis", "max": "Du har nådd 3&nbsp;år gratis", "m1": "1 måned gratis", "mn": "{n} måneder gratis", "y1": "1 år gratis", "y3": "3 år gratis", "y1s": "1 år", "y3s": "3 år", "note": "Oppdateres daglig."}, "no": {"t": "Dine invitasjoner", "o": "Åpnet lenken", "c": "Tok imot gaven", "s": "Registrert", "a": "Aktive (30+ konsultasjoner)", "earned": "Opptjent så langt: <b>{m}</b>", "zero": "Når en kollega har brukt Noteless i 30 konsultasjoner, samler du gratis måneder.", "to1": "{n} til, så får du 1&nbsp;år gratis", "to3": "{n} til, så får du 3&nbsp;år gratis", "max": "Du har nådd 3&nbsp;år gratis", "m1": "1 måned gratis", "mn": "{n} måneder gratis", "y1": "1 år gratis", "y3": "3 år gratis", "y1s": "1 år", "y3s": "3 år", "note": "Oppdateres daglig."}, "en": {"t": "Your invitations", "o": "Link opened", "c": "Gift accepted", "s": "Signed up", "a": "Active (30+ consultations)", "earned": "Earned so far: <b>{m}</b>", "zero": "Once a colleague has used Noteless in 30 consultations, you start collecting free months.", "to1": "{n} more to 1&nbsp;year free", "to3": "{n} more to 3&nbsp;years free", "max": "3&nbsp;years free reached", "m1": "1 month free", "mn": "{n} months free", "y1": "1 year free", "y3": "3 years free", "y1s": "1 year", "y3s": "3 years", "note": "Updates once a day."}}, DEF="nb", data=null;
   function L(){var l=(document.documentElement.lang||DEF).slice(0,2);return S[l]||S[DEF]}
   function f(s,o){return s.replace(/\{(\w+)\}/g,function(_,k){return o[k]})}
   function months(n){return n+(n>=5?7:0)+(n>=10?19:0)}
   function mlabel(m,t){return m===12?t.y1:m===36?t.y3:m===1?t.m1:f(t.mn,{n:m})}
   function $(id){return document.getElementById(id)}
   function render(){
-    if(!data)return; var t=L(), n=data.signed_up||0, m=months(n);
+    if(!data)return; var t=L(), n=data.activated||0, m=months(n);
     $('rstat-t').innerHTML=t.t; $('rstat-note').innerHTML=t.note;
-    $('rstat-o').textContent=data.opened||0; $('rstat-c').textContent=data.claimed||0; $('rstat-s').textContent=n;
-    $('rstat-ol').innerHTML=t.o; $('rstat-cl').innerHTML=t.c; $('rstat-sl').innerHTML=t.s;
+    $('rstat-o').textContent=data.opened||0; $('rstat-c').textContent=data.claimed||0; $('rstat-s').textContent=data.signed_up||0; $('rstat-a').textContent=n;
+    $('rstat-ol').innerHTML=t.o; $('rstat-cl').innerHTML=t.c; $('rstat-sl').innerHTML=t.s; $('rstat-al').innerHTML=t.a;
     $('rstat-m5l').innerHTML='5 · '+t.y1s; $('rstat-m10l').innerHTML='10 · '+t.y3s;
     $('rstat-m5').className='rstat-mk'+(n>=5?' on':''); $('rstat-m10').className='rstat-mk'+(n>=10?' on':'');
     $('rstat-earned').innerHTML=n?f(t.earned,{m:mlabel(m,t)}):t.zero;
